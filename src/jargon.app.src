@@ -1,0 +1,15 @@
+{application, jargon,
+ [{description, "Modern Argon2 password hashing for Erlang"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, [jargon]},
+
+  {maintainers, []},
+  {licenses, ["MIT"]},
+  {links, []}
+ ]}.
