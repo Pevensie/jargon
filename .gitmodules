@@ -1,3 +1,4 @@
 [submodule "argon2"]
 	path = argon2
-	url = git@github.com:p-h-c/phc-winner-argon2
+	url = git@github.com:Pevensie/argon2
+	branch = makefile_update

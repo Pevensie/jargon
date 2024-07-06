@@ -76,6 +76,8 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc,
   return result_nif;
 }
 
-static ErlNifFunc nif_funcs[] = {{"hash", 7, argon2_hash_nif}};
+static ErlNifFunc nif_funcs[] = {
+    {"hash", 7, argon2_hash_nif},
+};
 
-ERL_NIF_INIT(argon2, nif_funcs, NULL, NULL, NULL, NULL)
+ERL_NIF_INIT(jargon, nif_funcs, NULL, NULL, NULL, NULL)
