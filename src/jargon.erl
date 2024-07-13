@@ -2,7 +2,7 @@
 
 -author("Isaac Harris-Holt").
 
--export([hash/7]).
+-export([hash/7, verify/2]).
 
 -on_load init/0.
 
@@ -29,9 +29,9 @@ init() ->
 hash(Password, Salt, Algorithm, TimeCost, MemoryCost, Parallelism, HashLen) ->
     AlgorithmInt =
         case Algorithm of
-            argon2i ->
-                0;
             argon2d ->
+                0;
+            argon2i ->
                 1;
             argon2id ->
                 2;
@@ -125,4 +125,37 @@ hash_error_code_to_string(_) ->
     unknown_error_code.
 
 hash_nif(TimeCost, MemoryCost, Parallelism, Password, Salt, HashLen, Algorithm) ->
+    erlang:nif_error(nif_library_not_loaded).
+
+verify(EncodedHash, Password) ->
+    AlgorithmInt =
+        case EncodedHash of
+            %% Starts with $argon2i$
+            <<"$argon2i", _/binary>> ->
+                0;
+            %% Starts with $argon2d$
+            <<"$argon2d", _/binary>> ->
+                1;
+            %% Starts with $argon2id$
+            <<"$argon2id", _/binary>> ->
+                2;
+            _ ->
+                3
+        end,
+    case AlgorithmInt of
+        3 ->
+            {error, invalid_algorithm};
+        _ ->
+            case verify_nif(EncodedHash, Password, AlgorithmInt)
+            of
+                {ok, true} ->
+                    {ok, true};
+                {ok, false} ->
+                    {ok, false};
+                {error, Error} ->
+                    {error, hash_error_code_to_string(Error)}
+            end
+    end.
+
+verify_nif(EncodedHash, Password, Algorithm) ->
     erlang:nif_error(nif_library_not_loaded).
