@@ -1,10 +1,13 @@
 #include "erl_nif.h"
 
 #include "argon2.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 #define ARGON2_VERSION 13
 #define JARGON_IS_VALID_TYPE(v) (v <= Argon2_id)
+#define JARGON_ERROR_TUPLE(env, error)                                         \
+  enif_make_tuple2(env, enif_make_atom(env, "error"), enif_make_int(env, error))
 
 static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc,
                                     const ERL_NIF_TERM argv[]) {
@@ -32,7 +35,7 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc,
   raw_hash = malloc(hash_len);
   if (raw_hash == NULL) {
     // TODO: return better error
-    return enif_make_badarg(env);
+    return JARGON_ERROR_TUPLE(env, ARGON2_MEMORY_ALLOCATION_ERROR);
   }
 
   encoded_hash_len =
@@ -41,22 +44,24 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc,
   encoded_hash_len++;
   encoded_hash = malloc(encoded_hash_len);
   if (encoded_hash == NULL) {
-    // TODO: return better error
-    return enif_make_badarg(env);
+    free(raw_hash);
+    return JARGON_ERROR_TUPLE(env, ARGON2_MEMORY_ALLOCATION_ERROR);
   }
 
   ERL_NIF_TERM result_nif;
 
   uint32_t result;
 
-  result = argon2_hash((uint32_t)t_cost, m_cost, parallelism, password.data,
-                       password.size, salt.data, salt.size, raw_hash,
-                       (size_t)hash_len, encoded_hash, encoded_hash_len,
-                       (argon2_type)algorithm, ARGON2_VERSION);
+  result =
+      argon2_hash((uint32_t)t_cost, m_cost, parallelism, password.data,
+                  (size_t)password.size, salt.data, (size_t)salt.size, raw_hash,
+                  (size_t)hash_len, encoded_hash, encoded_hash_len,
+                  (argon2_type)algorithm, ARGON2_VERSION);
 
   if (result != ARGON2_OK) {
-    // TODO: return better error
-    return enif_make_badarg(env);
+    free(raw_hash);
+    free(encoded_hash);
+    return JARGON_ERROR_TUPLE(env, result);
   }
 
   result_nif =
@@ -77,7 +82,7 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc,
 }
 
 static ErlNifFunc nif_funcs[] = {
-    {"hash", 7, argon2_hash_nif},
+    {"hash_nif", 7, argon2_hash_nif, ERL_NIF_DIRTY_JOB_CPU_BOUND},
 };
 
 ERL_NIF_INIT(jargon, nif_funcs, NULL, NULL, NULL, NULL)
