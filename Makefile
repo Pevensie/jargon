@@ -17,8 +17,8 @@ clean:
 test:
 	@$(REBAR) eunit
 
-release-prod:
-	@$(REBAR) release -n jargon_prod
+build: compile
+	@$(REBAR) hex build
 
-release-dev:
-	@$(REBAR) release -n jargon_dev
+publish: build
+	@$(REBAR) hex cut --repo hexpm:pevensie

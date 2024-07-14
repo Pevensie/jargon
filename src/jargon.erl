@@ -26,6 +26,18 @@ init() ->
         end,
     erlang:load_nif(SoName, 0).
 
+%% @doc 
+%% Hash a password with Argon2.
+%%
+%% @param Password The password to hash.
+%% @param Salt The salt to use for hashing. Must be at least 32 bytes (8 base64 characters).
+%% @param Algorithm The Argon2 algorithm to use. Must be one of 'argon2d', 'argon2i', or 'argon2id'.
+%% @param TimeCost The number of iterations to use.
+%% @param MemoryCost The amount of memory to use.
+%% @param Parallelism The number of threads to use.
+%% @param HashLen The length of the hash to return.
+%%
+-spec hash(Password :: binary(), Salt :: binary(), Algorithm :: argon2d | argon2i | argon2id, TimeCost :: pos_integer(), MemoryCost :: pos_integer(), Parallelism :: pos_integer(), HashLen :: pos_integer()) -> {ok, RawHash :: binary(), EncodedHash :: binary()} | {error, Error :: atom()}.
 hash(Password, Salt, Algorithm, TimeCost, MemoryCost, Parallelism, HashLen) ->
     AlgorithmInt =
         case Algorithm of
@@ -127,6 +139,10 @@ hash_error_code_to_string(_) ->
 hash_nif(Password, Salt, Algorithm, TimeCost, MemoryCost, Parallelism, HashLen) ->
     erlang:nif_error(nif_library_not_loaded).
 
+%% @doc 
+%% Verify an encoded hash against a password.
+%%
+-spec verify(EncodedHash :: binary(), Password :: binary()) -> {ok, true} | {ok, false} | {error, Error :: atom()}.
 verify(EncodedHash, Password) ->
     AlgorithmInt =
         case EncodedHash of
