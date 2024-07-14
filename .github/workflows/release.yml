@@ -24,9 +24,11 @@ jobs:
         run: make test
       - name: Build
         run: make build
+      - name: Add version to env
+        run: echo "VER=$(echo ${{ github.ref_name }} | sed 's/v//')" >> $GITHUB_ENV
       - name: Upload release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            _build/default/lib/jargon/hex/jargon-${{ github.ref_name.replace('v', '') }}.tar
-            _build/default/lib/jargon/hex/jargon-${{ github.ref_name.replace('v', '') }}-docs.tar
+            _build/default/lib/jargon/hex/jargon-${{ env.VER }}.tar
+            _build/default/lib/jargon/hex/jargon-${{ env.VER }}-docs.tar
