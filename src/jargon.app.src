@@ -11,5 +11,8 @@
 
   {maintainers, []},
   {licenses, ["MIT"]},
-  {links, []}
+  {links, [
+    {"GitHub", "https://github.com/Pevensie/jargon"}
+  ]},
+  {files, ["src", "c_src", "priv", "rebar.config", "rebar.lock", "README.md", "LICENSE", "argon2/src", "argon2/include", "Makefile*"]}
  ]}.

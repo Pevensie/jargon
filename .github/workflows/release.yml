@@ -22,8 +22,6 @@ jobs:
         run: make compile
       - name: Run tests
         run: make test
-      - name: Hex auth
-        run: rebar3 hex organization auth hexpm:pevensie --key ${{ secrets.HEX_API_KEY }}
       - name: Build
         run: make build
       - name: Upload release
