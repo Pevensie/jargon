@@ -1,0 +1,18 @@
+{application, jargon,
+ [{description, "Modern Argon2 password hashing for Erlang"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, [jargon]},
+
+  {maintainers, []},
+  {licenses, ["MIT"]},
+  {links, [
+    {"GitHub", "https://github.com/Pevensie/jargon"}
+  ]},
+  {files, ["src", "c_src", "priv", "rebar.config", "rebar.lock", "README.md", "LICENSE", "argon2/src", "argon2/include", "Makefile*"]}
+ ]}.
