@@ -42,7 +42,7 @@ hash(Password, Salt, Algorithm, TimeCost, MemoryCost, Parallelism, HashLen) ->
         3 ->
             {error, invalid_algorithm};
         _ ->
-            case hash_nif(TimeCost, MemoryCost, Parallelism, Password, Salt, HashLen, AlgorithmInt)
+            case hash_nif(Password, Salt, AlgorithmInt, TimeCost, MemoryCost, Parallelism, HashLen)
             of
                 {ok, RawHash, EncodedHash} ->
                     {ok, RawHash, EncodedHash};
@@ -124,20 +124,20 @@ hash_error_code_to_string(Error) when is_integer(Error), Error =:= -35 ->
 hash_error_code_to_string(_) ->
     unknown_error_code.
 
-hash_nif(TimeCost, MemoryCost, Parallelism, Password, Salt, HashLen, Algorithm) ->
+hash_nif(Password, Salt, Algorithm, TimeCost, MemoryCost, Parallelism, HashLen) ->
     erlang:nif_error(nif_library_not_loaded).
 
 verify(EncodedHash, Password) ->
     AlgorithmInt =
         case EncodedHash of
             %% Starts with $argon2i$
-            <<"$argon2i", _/binary>> ->
+            <<"$argon2d$", _/binary>> ->
                 0;
             %% Starts with $argon2d$
-            <<"$argon2d", _/binary>> ->
+            <<"$argon2i$", _/binary>> ->
                 1;
             %% Starts with $argon2id$
-            <<"$argon2id", _/binary>> ->
+            <<"$argon2id$", _/binary>> ->
                 2;
             _ ->
                 3
@@ -146,8 +146,7 @@ verify(EncodedHash, Password) ->
         3 ->
             {error, invalid_algorithm};
         _ ->
-            case verify_nif(EncodedHash, Password, AlgorithmInt)
-            of
+            case verify_nif(EncodedHash, Password, AlgorithmInt) of
                 {ok, true} ->
                     {ok, true};
                 {ok, false} ->

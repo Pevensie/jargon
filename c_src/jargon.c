@@ -22,13 +22,13 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc,
   char *encoded_hash = NULL;
   size_t encoded_hash_len = 0;
 
-  if (!enif_get_uint(env, argv[0], &t_cost) ||
-      !enif_get_uint(env, argv[1], &m_cost) ||
-      !enif_get_uint(env, argv[2], &parallelism) ||
-      !enif_inspect_binary(env, argv[3], &password) ||
-      !enif_inspect_binary(env, argv[4], &salt) ||
-      !enif_get_uint(env, argv[5], &hash_len) ||
-      !enif_get_uint(env, argv[6], &algorithm) ||
+  if (!enif_inspect_binary(env, argv[0], &password) ||
+      !enif_inspect_binary(env, argv[1], &salt) ||
+      !enif_get_uint(env, argv[2], &algorithm) ||
+      !enif_get_uint(env, argv[3], &t_cost) ||
+      !enif_get_uint(env, argv[4], &m_cost) ||
+      !enif_get_uint(env, argv[5], &parallelism) ||
+      !enif_get_uint(env, argv[6], &hash_len) ||
       !JARGON_IS_VALID_TYPE(algorithm)) {
     return enif_make_badarg(env);
   }
@@ -42,7 +42,6 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc,
       argon2_encodedlen(t_cost, m_cost, parallelism, (uint32_t)salt.size,
                         hash_len, (argon2_type)algorithm);
 
-  encoded_hash_len++; // for null terminator
   encoded_hash = malloc(encoded_hash_len);
   if (encoded_hash == NULL) {
     free(raw_hash);
@@ -65,9 +64,6 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc,
     return JARGON_ERROR_TUPLE(env, result);
   }
 
-  enif_fprintf(stderr, "encoded_hash_len: %d\n", encoded_hash_len);
-  enif_fprintf(stderr, encoded_hash);
-
   ERL_NIF_TERM hash_nif_term;
   unsigned char *hash_nif_term_data =
       enif_make_new_binary(env, hash_len, &hash_nif_term);
@@ -78,6 +74,7 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc,
   }
   memcpy(hash_nif_term_data, raw_hash, hash_len);
 
+  encoded_hash_len--; // remove null terminator
   ERL_NIF_TERM encoded_hash_term;
   unsigned char *encoded_hash_term_data =
       enif_make_new_binary(env, encoded_hash_len, &encoded_hash_term);
@@ -92,11 +89,9 @@ static ERL_NIF_TERM argon2_hash_nif(ErlNifEnv *env, int argc,
                                 encoded_hash_term);
 
   if (raw_hash) {
-    clear_internal_memory(raw_hash, hash_len);
     free(raw_hash);
   }
   if (encoded_hash) {
-    clear_internal_memory(encoded_hash, encoded_hash_len);
     free(encoded_hash);
   }
 
@@ -124,15 +119,17 @@ static ERL_NIF_TERM argon2_verify_nif(ErlNifEnv *env, int argc,
   memcpy(c_str, encoded_hash.data, encoded_hash.size);
   c_str[encoded_hash.size] = '\0';
 
-  enif_fprintf(stderr, "c_str: %s\n", c_str);
-
   result = argon2_verify(c_str, pwd_param.data, (size_t)pwd_param.size,
                          (argon2_type)type_param);
-  clear_internal_memory(encoded_hash.data, encoded_hash.size);
   enif_free(c_str);
 
   if (result == ARGON2_OK) {
-    return enif_make_atom(env, "ok");
+    return enif_make_tuple2(env, enif_make_atom(env, "ok"),
+                            enif_make_atom(env, "true"));
+  }
+  if (result == ARGON2_VERIFY_MISMATCH) {
+    return enif_make_tuple2(env, enif_make_atom(env, "ok"),
+                            enif_make_atom(env, "false"));
   }
 
   return JARGON_ERROR_TUPLE(env, result);

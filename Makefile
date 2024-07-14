@@ -3,9 +3,10 @@ DEST:=$(PREFIX)$(PROJECT)
 
 REBAR=rebar3
 
-.PHONY: all clean test release-prod release-dev
+.PHONY: compile clean test release-prod release-dev
 
-all:
+compile:
+	mkdir -p priv
 	(cd argon2;make all;cd ..;cp argon2/libargon2.so.1 argon2/libargon2.a priv)
 	@$(REBAR) compile
 
