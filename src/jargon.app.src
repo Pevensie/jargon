@@ -1,6 +1,6 @@
 {application,jargon,
              [{description,"Modern Argon2 password hashing for Erlang"},
-              {vsn,"1.0.0"},
+              {vsn,"1.0.1"},
               {registered,[]},
               {applications,[kernel,stdlib]},
               {env,[]},
