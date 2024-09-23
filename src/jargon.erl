@@ -136,7 +136,7 @@ hash_error_code_to_string(Error) when is_integer(Error), Error =:= -35 ->
 hash_error_code_to_string(_) ->
     unknown_error_code.
 
-hash_nif(Password, Salt, Algorithm, TimeCost, MemoryCost, Parallelism, HashLen) ->
+hash_nif(_Password, _Salt, _Algorithm, _TimeCost, _MemoryCost, _Parallelism, _HashLen) ->
     erlang:nif_error(nif_library_not_loaded).
 
 %% @doc 
@@ -172,5 +172,5 @@ verify(EncodedHash, Password) ->
             end
     end.
 
-verify_nif(EncodedHash, Password, Algorithm) ->
+verify_nif(_EncodedHash, _Password, _Algorithm) ->
     erlang:nif_error(nif_library_not_loaded).
