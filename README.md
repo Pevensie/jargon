@@ -29,6 +29,22 @@ git submodule update --init --recursive
 make compile
 ```
 
+## Using in Docker
+
+If you want to deploy an application using Jargon in a Docker container, you'll
+need to make sure your image includes a C compiler to build the Jargon NIF.
+
+### Alpine
+
+```dockerfile
+RUN apk add --no-cache build-base
+```
+
+### Debian
+
+```dockerfile
+RUN apt-get update && apt-get install -y build-essential
+
 ## Contributing
 
 Contributions are welcome!
