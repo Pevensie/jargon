@@ -44,6 +44,13 @@ RUN apk add --no-cache build-base
 
 ```dockerfile
 RUN apt-get update && apt-get install -y build-essential
+```
+
+## Using on Windows
+
+Jargon is not currently set up to compile on Windows, and I don't currently have
+a Windows machine available on which to test this. PRs resolving adding support
+are more than welcome!
 
 ## Contributing
 
