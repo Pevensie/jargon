@@ -48,9 +48,19 @@ RUN apt-get update && apt-get install -y build-essential
 
 ## Using on Windows
 
-Jargon is not currently set up to compile on Windows, and I don't currently have
-a Windows machine available on which to test this. PRs resolving adding support
-are more than welcome!
+Jargon currently needs to compile on MSYS2. It has been tested on the MINGW64 environment and, as such, this guide is written for it.
+
+First, install dependencies with `pacman`
+```bash
+pacman -S git make mingw-w64-x86_64-gcc
+```
+
+Then, you must put `erl` and `rebar3` in your path. As an example, if their paths in Windows are, respectively, `C:\path\to\erlang\here\erl` and `C:\path\to\rebar\here\rebar3`, you would run
+```bash
+PATH = /c/path/to/erlang/here:/c/path/to/rebar/here:$PATH
+```
+
+Finally, you can compile the package with `make`. After compiling, you can use it through Windows as normal.
 
 ## Contributing
 
