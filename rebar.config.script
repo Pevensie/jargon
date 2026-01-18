@@ -1,0 +1,8 @@
+case os:type() of
+    {win32, _} ->
+        lists:keystore(artifacts, 1, CONFIG, {artifacts, ["priv/jargon.dll"]});
+    {unix, _} ->
+        lists:keystore(artifacts, 1, CONFIG, {artifacts, ["priv/jargon.so"]})
+end
+
+.
