@@ -12,7 +12,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, macos-15-intel]
         otp-version: [25.3.2.31, 26.2.5.2, 27.0.1]
-    name: Test on OTP ${{ matrix.otp-version }}
+    name: Test on OTP ${{ matrix.otp-version }} (${{ matrix.os }})
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         otp-version: [25.3.2.31, 26.2.5.2, 27.0.1]
-    name: Test on OTP ${{ matrix.otp-version }}
+    name: Test on OTP ${{ matrix.otp-version }} (windows-2022)
     defaults:
       run:
         shell: msys2 {0}
