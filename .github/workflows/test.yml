@@ -49,12 +49,11 @@ jobs:
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
+          path-type: inherit
           update: true
           install: git
             make
             mingw-w64-x86_64-gcc
-      - name: Setup PATH
-        run: PATH=$(cygpath $INSTALL_DIR_FOR_OTP):$(cygpath $INSTALL_DIR_FOR_REBAR3):$PATH
       - name: Compile
         run: make compile
       - name: Run tests
