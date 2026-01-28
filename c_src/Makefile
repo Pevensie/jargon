@@ -26,9 +26,9 @@ ifeq ($(shell uname -o), Msys)
 	C_SRC_OUTPUT := $(addsuffix .dll, $(basename $(C_SRC_OUTPUT)))
 	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes
 	CXXFLAGS ?= -O3 -finline-functions -Wall
-	ERTS_INCLUDE_DIR := $(shell cygwin -u $(ERTS_INCLUDE_DIR))
-	ERL_INTERFACE_INCLUDE_DIR := $(shell cygwin -u $(ERL_INTERFACE_INCLUDE_DIR))
-	ERL_INTERFACE_INCLUDE_LIB_DIR := $(shell cygwin -u $(ERL_INTERFACE_INCLUDE_LIB_DIR))
+	ERTS_INCLUDE_DIR := $(shell cygpath -u $(ERTS_INCLUDE_DIR))
+	ERL_INTERFACE_INCLUDE_DIR := $(shell cygpath -u $(ERL_INTERFACE_INCLUDE_DIR))
+	ERL_INTERFACE_INCLUDE_LIB_DIR := $(shell cygpath -u $(ERL_INTERFACE_INCLUDE_LIB_DIR))
 else ifeq ($(UNAME_SYS), Darwin)
 	CC ?= cc
 	CFLAGS ?= -O3 -std=c99 -finline-functions -Wall -Wmissing-prototypes
